@@ -9,8 +9,10 @@ import AddBookModal from "@/components/AddBookModal";
 import UpdateProfileModal from "@/components/UpdateProfileModal";
 import UpdatePasswordModal from "@/components/UpdatePasswordModal";
 import BookCard from "@/components/BookCard";
+import Toast from "@/components/Toast";
 
 type Modal = "login" | "signup" | "addBook" | "updateProfile" | "updatePassword" | null;
+type ToastState = { message: string; type: "success" | "error" } | null;
 
 export default function HomePage() {
   const { user, loading, logout } = useAuth();
@@ -18,6 +20,11 @@ export default function HomePage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [books, setBooks] = useState<Book[]>([]);
   const [booksLoading, setBooksLoading] = useState(false);
+  const [toast, setToast] = useState<ToastState>(null);
+
+  const showToast = (message: string, type: "success" | "error" = "success") => {
+    setToast({ message, type });
+  };
 
   const loadBooks = useCallback(async () => {
     if (!user) return;
@@ -25,8 +32,8 @@ export default function HomePage() {
     try {
       const data = await fetchBooks(user);
       setBooks(data);
-    } catch (e) {
-      console.error("Failed to load books", e);
+    } catch {
+      showToast("Failed to load books", "error");
     } finally {
       setBooksLoading(false);
     }
@@ -39,8 +46,8 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div style={{ textAlign: "center", marginTop: "80px", fontSize: "1.2rem" }}>
-        Loading…
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-cyan-700 text-lg font-semibold animate-pulse">Loading…</div>
       </div>
     );
   }
@@ -48,74 +55,152 @@ export default function HomePage() {
   return (
     <>
       {/* ── Header ── */}
-      <header id="heading-container">
-        <div id="head">
-          <h1 id="heading">Library</h1>
-          <p id="heading-caption">Ultimate Book Repository</p>
-          {user && (
-            <p className="welcome-message">Welcome, {user.displayName ?? user.email}</p>
-          )}
-        </div>
+      <header className="bg-cyan-700/90 backdrop-blur-sm shadow-md py-4 text-center relative">
+        <h1 className="text-4xl font-bold text-white" style={{ fontFamily: "'Balsamiq Sans', cursive" }}>
+          Bookkeeper
+        </h1>
+        <p className="text-cyan-100 text-sm mt-1">Your personal library</p>
+        {user && (
+          <p className="text-amber-300 text-sm font-semibold mt-1">
+            Welcome, {user.displayName ?? user.email}
+          </p>
+        )}
       </header>
 
       {/* ── Nav buttons ── */}
-      <div className="nav-buttons">
+      <div className="fixed top-4 right-4 flex gap-2 z-40">
         {!user ? (
           <>
-            <button className="nav-btn nav-btn-login"  onClick={() => setModal("login")}>Login</button>
-            <button className="nav-btn nav-btn-signup" onClick={() => setModal("signup")}>Sign Up</button>
+            <button
+              onClick={() => setModal("login")}
+              className="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition-colors"
+            >
+              Login
+            </button>
+            <button
+              onClick={() => setModal("signup")}
+              className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition-colors"
+            >
+              Sign Up
+            </button>
           </>
         ) : (
-          <button className="nav-btn nav-btn-logout" onClick={logout}>Logout</button>
+          <button
+            onClick={logout}
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition-colors"
+          >
+            Logout
+          </button>
         )}
       </div>
 
       {/* ── Sidebar toggle ── */}
       {user && (
-        <button className="openbtn" onClick={() => setSidebarOpen(o => !o)}>&#9776;</button>
+        <button
+          onClick={() => setSidebarOpen(o => !o)}
+          aria-label="Toggle menu"
+          className="fixed top-4 left-4 z-40 bg-black/30 hover:bg-black/50 text-white rounded-xl p-2.5 text-lg transition-colors"
+        >
+          ☰
+        </button>
       )}
 
       {/* ── Sidebar ── */}
-      <nav className={`sidepanel ${sidebarOpen ? "open" : ""}`}>
-        <button onClick={() => { setModal("addBook"); setSidebarOpen(false); }}>Add New Book</button>
-        <button onClick={() => { setModal("updateProfile"); setSidebarOpen(false); }}>Update Profile</button>
-        <button onClick={() => { setModal("updatePassword"); setSidebarOpen(false); }}>Update Password</button>
+      <nav
+        className={`fixed left-0 top-0 h-full bg-cyan-900 z-30 pt-16 transition-all duration-300 overflow-hidden ${
+          sidebarOpen ? "w-64" : "w-0"
+        }`}
+      >
+        {[
+          { label: "Add New Book", action: "addBook" },
+          { label: "Update Profile", action: "updateProfile" },
+          { label: "Update Password", action: "updatePassword" },
+        ].map(({ label, action }) => (
+          <button
+            key={action}
+            onClick={() => { setModal(action as Modal); setSidebarOpen(false); }}
+            className="block w-full text-left px-6 py-4 text-cyan-100 hover:bg-white/10 text-sm font-medium transition-colors whitespace-nowrap"
+          >
+            {label}
+          </button>
+        ))}
       </nav>
 
+      {/* ── Sidebar backdrop ── */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-20"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* ── Book grid ── */}
-      <main>
-        <div id="container">
-          {!user && (
-            <p style={{ color: "#666", padding: "20px" }}>Please log in to view your library.</p>
-          )}
-          {user && booksLoading && (
-            <p style={{ color: "#666", padding: "20px" }}>Loading your books…</p>
-          )}
-          {user && !booksLoading && books.length === 0 && (
-            <p style={{ color: "#666", padding: "20px" }}>No books yet. Add your first one!</p>
-          )}
-          {user && !booksLoading && books.map(book => (
-            <BookCard
-              key={book.id}
-              book={book}
-              onUpdated={updated => setBooks(prev => prev.map(b => b.id === updated.id ? updated : b))}
-              onDeleted={id => setBooks(prev => prev.filter(b => b.id !== id))}
-            />
-          ))}
-        </div>
+      <main className="pt-6 px-6 pb-12">
+        {!user && (
+          <div className="flex flex-col items-center justify-center mt-24 gap-4">
+            <p className="text-gray-500 text-lg">Please log in to view your library.</p>
+            <button
+              onClick={() => setModal("login")}
+              className="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors"
+            >
+              Login
+            </button>
+          </div>
+        )}
+
+        {user && booksLoading && (
+          <div className="flex justify-center mt-24">
+            <p className="text-cyan-600 font-semibold animate-pulse">Loading your books…</p>
+          </div>
+        )}
+
+        {user && !booksLoading && books.length === 0 && (
+          <div className="flex flex-col items-center justify-center mt-24 gap-4">
+            <p className="text-gray-400 text-lg">No books yet.</p>
+            <button
+              onClick={() => setModal("addBook")}
+              className="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors"
+            >
+              Add your first book
+            </button>
+          </div>
+        )}
+
+        {user && !booksLoading && books.length > 0 && (
+          <div className="flex flex-wrap gap-4 mt-4">
+            {books.map(book => (
+              <BookCard
+                key={book.id}
+                book={book}
+                onUpdated={updated => setBooks(prev => prev.map(b => b.id === updated.id ? updated : b))}
+                onDeleted={id => setBooks(prev => prev.filter(b => b.id !== id))}
+                onToast={showToast}
+              />
+            ))}
+          </div>
+        )}
       </main>
 
       {/* ── Modals ── */}
-      {modal === "login"          && <LoginModal           onClose={() => setModal(null)} />}
-      {modal === "signup"         && <SignUpModal           onClose={() => setModal(null)} />}
+      {modal === "login"          && <LoginModal onClose={() => setModal(null)} />}
+      {modal === "signup"         && <SignUpModal onClose={() => setModal(null)} />}
       {modal === "addBook"        && (
         <AddBookModal
           onClose={() => setModal(null)}
-          onAdded={book => setBooks(prev => [...prev, book])}
+          onAdded={book => { setBooks(prev => [...prev, book]); showToast("Book added!"); }}
         />
       )}
-      {modal === "updateProfile"  && <UpdateProfileModal   onClose={() => setModal(null)} />}
-      {modal === "updatePassword" && <UpdatePasswordModal  onClose={() => setModal(null)} />}
+      {modal === "updateProfile"  && <UpdateProfileModal onClose={() => setModal(null)} />}
+      {modal === "updatePassword" && <UpdatePasswordModal onClose={() => setModal(null)} />}
+
+      {/* ── Toast ── */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onDone={() => setToast(null)}
+        />
+      )}
     </>
   );
 }
