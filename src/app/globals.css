@@ -1,0 +1,169 @@
+/* ── Ported from styles/style.css ── */
+@import url('https://fonts.googleapis.com/css2?family=Balsamiq+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap');
+
+@import "tailwindcss";
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: 'Quicksand', sans-serif;
+  background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+  min-height: 100vh;
+}
+
+/* ── Header ── */
+#heading-container {
+  background: rgba(0, 150, 180, 0.85);
+  padding: 18px 0 14px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+#heading { color: #fff; font-family: 'Balsamiq Sans', cursive; font-size: 2.5rem; margin: 0; }
+#heading-caption { color: rgba(255,255,255,0.8); margin: 2px 0 0; font-size: 0.95rem; }
+.welcome-message { color: #ffe082; font-weight: 600; margin: 4px 0 0; }
+
+/* ── Book grid ── */
+#container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  padding: 28px 24px;
+  justify-content: flex-start;
+}
+.book-card {
+  background: rgba(255,255,255,0.85);
+  border: 2px solid rgba(0,150,180,0.25);
+  border-radius: 10px;
+  padding: 18px 16px 12px;
+  width: 220px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.book-detail { font-size: 0.93rem; color: #333; }
+.book-card-tools { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+
+/* ── Buttons ── */
+.read    { background: #4caf50; color: #fff; border: none; border-radius: 5px; padding: 5px 10px; cursor: pointer; font-size: 0.8rem; }
+.not-read{ background: #ef9a9a; color: #fff; border: none; border-radius: 5px; padding: 5px 10px; cursor: pointer; font-size: 0.8rem; }
+.delete  { background: #e53935; color: #fff; border: none; border-radius: 5px; padding: 5px 10px; cursor: pointer; font-size: 0.8rem; }
+.update  { background: #1976d2; color: #fff; border: none; border-radius: 5px; padding: 5px 10px; cursor: pointer; font-size: 0.8rem; }
+
+/* ── Modal overlay ── */
+.modal-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 50;
+}
+.modal-box {
+  background: rgba(155,255,255,0.92);
+  border: 3px solid rgba(145,245,240,0.7);
+  border-radius: 10px;
+  padding: 28px 24px 20px;
+  min-width: 280px;
+  max-width: 340px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.modal-box h2 { font-family: 'Balsamiq Sans', cursive; font-size: 1.4rem; margin: 0 0 6px; }
+.modal-box label { font-weight: 600; font-size: 0.9rem; }
+.modal-box input[type=text],
+.modal-box input[type=email],
+.modal-box input[type=password],
+.modal-box input[type=number] {
+  width: 100%;
+  padding: 10px 12px;
+  margin: 4px 0 10px;
+  border: none;
+  background: #f1f1f1;
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+.modal-box input:focus { background: #ddd; outline: none; }
+.modal-box .btn-primary {
+  background: #4caf50; color: #fff; border: none; border-radius: 5px;
+  padding: 12px; width: 100%; cursor: pointer; font-size: 1rem; font-weight: 600;
+  margin-bottom: 6px; opacity: 0.9;
+}
+.modal-box .btn-primary:hover { opacity: 1; }
+.modal-box .btn-cancel {
+  background: #e53935; color: #fff; border: none; border-radius: 5px;
+  padding: 12px; width: 100%; cursor: pointer; font-size: 1rem; font-weight: 600;
+  opacity: 0.85;
+}
+.modal-box .btn-cancel:hover { opacity: 1; }
+
+/* ── Sidebar ── */
+.sidepanel {
+  width: 0;
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: #006064;
+  overflow-x: hidden;
+  transition: width 0.3s;
+  padding-top: 60px;
+  z-index: 40;
+}
+.sidepanel.open { width: 260px; }
+.sidepanel button {
+  display: block;
+  width: 100%;
+  padding: 14px 20px;
+  background: none;
+  border: none;
+  color: #e0f7fa;
+  text-align: left;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.sidepanel button:hover { background: rgba(255,255,255,0.12); }
+.openbtn {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  background: rgba(0,0,0,0.3);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 12px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  z-index: 45;
+}
+
+/* ── Nav buttons (login/signup/logout) ── */
+.nav-buttons {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  gap: 8px;
+  z-index: 45;
+}
+.nav-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.88rem;
+}
+.nav-btn-login  { background: #0097a7; color: #fff; }
+.nav-btn-signup { background: #00796b; color: #fff; }
+.nav-btn-logout { background: #e53935; color: #fff; }
+
+/* ── Radio group ── */
+.radio-group { display: flex; gap: 16px; margin: 6px 0 12px; }
+.radio-group label { font-weight: 400; display: flex; align-items: center; gap: 5px; }
