@@ -18,6 +18,7 @@ export default function BookCard({ book, onUpdated, onDeleted, onToast }: Props)
   const [author, setAuthor] = useState(book.author);
   const [pages, setPages] = useState(String(book.pages));
   const [loading, setLoading] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const toggleRead = async () => {
     if (!user) return;
@@ -58,39 +59,42 @@ export default function BookCard({ book, onUpdated, onDeleted, onToast }: Props)
     }
   };
 
+  const inputStyle: React.CSSProperties = {
+    width: "100%",
+    backgroundColor: "var(--bg-base)",
+    border: "1px solid var(--border)",
+    borderRadius: "0.5rem",
+    padding: "0.5rem 0.75rem",
+    fontSize: "0.8125rem",
+    color: "var(--text-primary)",
+    outline: "none",
+  };
+
+  // ── Edit mode ──
   if (editing) {
     return (
-      <div className="bg-white rounded-2xl shadow-md p-4 flex flex-col gap-3 w-56">
-        <input
-          className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
-          value={title}
-          onChange={e => setTitle(e.target.value)}
-          placeholder="Title"
-        />
-        <input
-          className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
-          value={author}
-          onChange={e => setAuthor(e.target.value)}
-          placeholder="Author"
-        />
-        <input
-          type="number"
-          className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
-          value={pages}
-          onChange={e => setPages(e.target.value)}
-          placeholder="Pages"
-        />
-        <div className="flex gap-2">
+      <div
+        className="rounded-2xl p-4 flex flex-col gap-3 shadow-xl"
+        style={{ backgroundColor: "var(--bg-surface)", border: "1px solid var(--border)" }}
+      >
+        <input style={inputStyle} value={title} onChange={e => setTitle(e.target.value)} placeholder="Title" />
+        <input style={inputStyle} value={author} onChange={e => setAuthor(e.target.value)} placeholder="Author" />
+        <input type="number" style={inputStyle} value={pages} onChange={e => setPages(e.target.value)} placeholder="Pages" />
+        <div className="flex gap-2 mt-1">
           <button
             onClick={handleUpdate}
             disabled={loading}
-            className="flex-1 bg-green-500 hover:bg-green-600 text-white rounded-lg py-2 text-sm font-semibold disabled:opacity-50 transition-colors"
+            className="flex-1 text-white rounded-lg py-2 text-xs font-semibold disabled:opacity-50 transition-colors"
+            style={{ backgroundColor: "var(--accent)" }}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = "var(--accent-hover)")}
+            onMouseLeave={e => (e.currentTarget.style.backgroundColor = "var(--accent)")}
           >
             {loading ? "Saving…" : "Save"}
           </button>
           <button
             onClick={() => setEditing(false)}
-            className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg py-2 text-sm font-semibold transition-colors"
+            className="flex-1 rounded-lg py-2 text-xs font-semibold transition-colors"
+            style={{ backgroundColor: "var(--bg-card)", color: "var(--text-secondary)", border: "1px solid var(--border)" }}
           >
             Cancel
           </button>
@@ -99,31 +103,96 @@ export default function BookCard({ book, onUpdated, onDeleted, onToast }: Props)
     );
   }
 
+  // ── Delete confirm ──
+  if (confirmDelete) {
+    return (
+      <div
+        className="rounded-2xl p-4 flex flex-col gap-3 shadow-xl"
+        style={{ backgroundColor: "var(--bg-surface)", border: "1px solid rgba(239,68,68,0.2)" }}
+      >
+        <p className="text-sm leading-snug" style={{ color: "var(--text-secondary)" }}>
+          Remove <span className="font-semibold" style={{ color: "var(--text-primary)" }}>{book.title}</span>?
+        </p>
+        <div className="flex gap-2">
+          <button
+            onClick={handleDelete}
+            className="flex-1 bg-red-600 hover:bg-red-500 text-white rounded-lg py-2 text-xs font-semibold transition-colors"
+          >
+            Delete
+          </button>
+          <button
+            onClick={() => setConfirmDelete(false)}
+            className="flex-1 rounded-lg py-2 text-xs font-semibold transition-colors"
+            style={{ backgroundColor: "var(--bg-card)", color: "var(--text-secondary)", border: "1px solid var(--border)" }}
+          >
+            Keep
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Default card ──
+  const isRead = book.read === "Read";
+
   return (
-    <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md hover:shadow-lg transition-shadow p-4 flex flex-col gap-2 w-56 border border-cyan-100">
-      <h3 className="font-bold text-gray-800 text-sm leading-snug line-clamp-2">{book.title}</h3>
-      <p className="text-gray-500 text-xs">{book.author}</p>
-      <p className="text-gray-400 text-xs">{book.pages} pages</p>
-      <div className="flex flex-wrap gap-2 mt-2">
-        <button
-          onClick={toggleRead}
-          className={`text-xs px-3 py-1.5 rounded-full font-semibold transition-colors ${
-            book.read === "Read"
-              ? "bg-green-100 text-green-700 hover:bg-green-200"
-              : "bg-amber-100 text-amber-700 hover:bg-amber-200"
-          }`}
-        >
-          {book.read}
-        </button>
+    <div
+      className="group rounded-2xl p-4 flex flex-col gap-3 shadow-lg transition-all duration-200"
+      style={{
+        backgroundColor: "var(--bg-card)",
+        border: "1px solid var(--border)",
+      }}
+      onMouseEnter={e => {
+        (e.currentTarget as HTMLDivElement).style.backgroundColor = "var(--bg-card-hover)";
+        (e.currentTarget as HTMLDivElement).style.borderColor = "var(--border-hover)";
+      }}
+      onMouseLeave={e => {
+        (e.currentTarget as HTMLDivElement).style.backgroundColor = "var(--bg-card)";
+        (e.currentTarget as HTMLDivElement).style.borderColor = "var(--border)";
+      }}
+    >
+      {/* Read badge */}
+      <button
+        onClick={toggleRead}
+        className="self-start inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full transition-colors"
+        style={
+          isRead
+            ? { backgroundColor: "rgba(34,197,94,0.15)", color: "#4ade80" }
+            : { backgroundColor: "rgba(251,191,36,0.15)", color: "#fbbf24" }
+        }
+        title="Toggle read status"
+      >
+        <span>{isRead ? "✓" : "○"}</span>
+        {book.read}
+      </button>
+
+      {/* Book info */}
+      <div className="flex-1">
+        <h3 className="font-semibold text-sm leading-snug line-clamp-2" style={{ color: "var(--text-primary)" }}>
+          {book.title}
+        </h3>
+        <p className="text-xs mt-1 line-clamp-1" style={{ color: "var(--text-secondary)" }}>
+          {book.author}
+        </p>
+        <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>
+          {book.pages.toLocaleString()} pp.
+        </p>
+      </div>
+
+      {/* Hover actions */}
+      <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
         <button
           onClick={() => setEditing(true)}
-          className="text-xs px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 hover:bg-blue-200 font-semibold transition-colors"
+          className="flex-1 py-1.5 text-[11px] font-medium rounded-lg transition-colors"
+          style={{ color: "var(--text-secondary)", backgroundColor: "var(--bg-card)", border: "1px solid var(--border)" }}
+          onMouseEnter={e => { e.currentTarget.style.color = "var(--text-primary)"; e.currentTarget.style.backgroundColor = "var(--bg-card-hover)"; }}
+          onMouseLeave={e => { e.currentTarget.style.color = "var(--text-secondary)"; e.currentTarget.style.backgroundColor = "var(--bg-card)"; }}
         >
           Edit
         </button>
         <button
-          onClick={handleDelete}
-          className="text-xs px-3 py-1.5 rounded-full bg-red-100 text-red-600 hover:bg-red-200 font-semibold transition-colors"
+          onClick={() => setConfirmDelete(true)}
+          className="flex-1 py-1.5 text-[11px] font-medium text-red-400 bg-red-500/10 hover:bg-red-500/25 rounded-lg transition-colors"
         >
           Delete
         </button>

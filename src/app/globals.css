@@ -1,12 +1,188 @@
-@import url('https://fonts.googleapis.com/css2?family=Balsamiq+Sans&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap');
 
 @import "tailwindcss";
 
-* { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: border-box; }
+
+/* ── Theme tokens ── */
+
+/* Midnight (default dark indigo) */
+[data-theme="midnight"], :root {
+  --bg-base:        #0f0f1a;
+  --bg-surface:     #13131f;
+  --bg-card:        rgba(255,255,255,0.03);
+  --bg-card-hover:  rgba(255,255,255,0.06);
+  --border:         rgba(255,255,255,0.08);
+  --border-hover:   rgba(255,255,255,0.15);
+  --text-primary:   #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted:     #475569;
+  --accent:         #6366f1;
+  --accent-hover:   #818cf8;
+  --accent-shadow:  rgba(99,102,241,0.35);
+  --glow-1:         rgba(99, 102, 241, 0.18);
+  --glow-2:         rgba(168, 85, 247, 0.12);
+}
+
+/* Nord — icy blues and teals */
+[data-theme="nord"] {
+  --bg-base:        #1a1f2e;
+  --bg-surface:     #1f2535;
+  --bg-card:        rgba(255,255,255,0.03);
+  --bg-card-hover:  rgba(255,255,255,0.055);
+  --border:         rgba(136,192,208,0.12);
+  --border-hover:   rgba(136,192,208,0.25);
+  --text-primary:   #d8dee9;
+  --text-secondary: #81a1c1;
+  --text-muted:     #4c566a;
+  --accent:         #5e81ac;
+  --accent-hover:   #81a1c1;
+  --accent-shadow:  rgba(94,129,172,0.35);
+  --glow-1:         rgba(94, 129, 172, 0.15);
+  --glow-2:         rgba(136, 192, 208, 0.10);
+}
+
+/* Forest — deep greens */
+[data-theme="forest"] {
+  --bg-base:        #0d1a12;
+  --bg-surface:     #111f16;
+  --bg-card:        rgba(255,255,255,0.03);
+  --bg-card-hover:  rgba(255,255,255,0.055);
+  --border:         rgba(74,222,128,0.10);
+  --border-hover:   rgba(74,222,128,0.22);
+  --text-primary:   #dcfce7;
+  --text-secondary: #86efac;
+  --text-muted:     #166534;
+  --accent:         #16a34a;
+  --accent-hover:   #22c55e;
+  --accent-shadow:  rgba(22,163,74,0.35);
+  --glow-1:         rgba(22, 163, 74, 0.15);
+  --glow-2:         rgba(4, 120, 87, 0.10);
+}
+
+/* Rose — warm rose/pink */
+[data-theme="rose"] {
+  --bg-base:        #1a0f14;
+  --bg-surface:     #1f1118;
+  --bg-card:        rgba(255,255,255,0.03);
+  --bg-card-hover:  rgba(255,255,255,0.055);
+  --border:         rgba(251,113,133,0.12);
+  --border-hover:   rgba(251,113,133,0.25);
+  --text-primary:   #ffe4e6;
+  --text-secondary: #fda4af;
+  --text-muted:     #9f1239;
+  --accent:         #e11d48;
+  --accent-hover:   #f43f5e;
+  --accent-shadow:  rgba(225,29,72,0.35);
+  --glow-1:         rgba(225, 29, 72, 0.15);
+  --glow-2:         rgba(168, 36, 86, 0.10);
+}
+
+/* Amber — warm desert gold */
+[data-theme="amber"] {
+  --bg-base:        #18120a;
+  --bg-surface:     #1f1710;
+  --bg-card:        rgba(255,255,255,0.03);
+  --bg-card-hover:  rgba(255,255,255,0.055);
+  --border:         rgba(251,191,36,0.12);
+  --border-hover:   rgba(251,191,36,0.25);
+  --text-primary:   #fef3c7;
+  --text-secondary: #fcd34d;
+  --text-muted:     #78350f;
+  --accent:         #d97706;
+  --accent-hover:   #f59e0b;
+  --accent-shadow:  rgba(217,119,6,0.35);
+  --glow-1:         rgba(217, 119, 6, 0.15);
+  --glow-2:         rgba(180, 83, 9, 0.10);
+}
+
+/* ── Light themes ── */
+
+/* Paper — clean warm white */
+[data-theme="paper"] {
+  --bg-base:        #f8f5f0;
+  --bg-surface:     #ffffff;
+  --bg-card:        rgba(0,0,0,0.03);
+  --bg-card-hover:  rgba(0,0,0,0.055);
+  --border:         rgba(0,0,0,0.08);
+  --border-hover:   rgba(0,0,0,0.18);
+  --text-primary:   #1c1917;
+  --text-secondary: #57534e;
+  --text-muted:     #a8a29e;
+  --accent:         #7c3aed;
+  --accent-hover:   #6d28d9;
+  --accent-shadow:  rgba(124,58,237,0.25);
+  --glow-1:         rgba(124, 58, 237, 0.06);
+  --glow-2:         rgba(196, 181, 253, 0.10);
+  --scrollbar:      rgba(0,0,0,0.15);
+  --scrollbar-hover:rgba(0,0,0,0.28);
+}
+
+/* Sky — soft blue & white */
+[data-theme="sky"] {
+  --bg-base:        #f0f7ff;
+  --bg-surface:     #ffffff;
+  --bg-card:        rgba(0,0,0,0.025);
+  --bg-card-hover:  rgba(0,0,0,0.05);
+  --border:         rgba(14,165,233,0.15);
+  --border-hover:   rgba(14,165,233,0.30);
+  --text-primary:   #0c1a2e;
+  --text-secondary: #334e68;
+  --text-muted:     #90aec6;
+  --accent:         #0284c7;
+  --accent-hover:   #0369a1;
+  --accent-shadow:  rgba(2,132,199,0.25);
+  --glow-1:         rgba(2, 132, 199, 0.08);
+  --glow-2:         rgba(56, 189, 248, 0.07);
+  --scrollbar:      rgba(0,0,0,0.12);
+  --scrollbar-hover:rgba(0,0,0,0.25);
+}
+
+/* Mint — fresh green & white */
+[data-theme="mint"] {
+  --bg-base:        #f0fdf4;
+  --bg-surface:     #ffffff;
+  --bg-card:        rgba(0,0,0,0.025);
+  --bg-card-hover:  rgba(0,0,0,0.05);
+  --border:         rgba(22,163,74,0.12);
+  --border-hover:   rgba(22,163,74,0.28);
+  --text-primary:   #052e16;
+  --text-secondary: #166534;
+  --text-muted:     #86efac;
+  --accent:         #16a34a;
+  --accent-hover:   #15803d;
+  --accent-shadow:  rgba(22,163,74,0.25);
+  --glow-1:         rgba(22, 163, 74, 0.07);
+  --glow-2:         rgba(134, 239, 172, 0.08);
+  --scrollbar:      rgba(0,0,0,0.12);
+  --scrollbar-hover:rgba(0,0,0,0.25);
+}
+
+/* ── Base styles using tokens ── */
+
+html {
+  scroll-behavior: smooth;
+}
 
 body {
-  font-family: 'Quicksand', sans-serif;
-  background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--bg-base);
+  background-image:
+    radial-gradient(ellipse 80% 60% at 20% -10%, var(--glow-1) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 110%, var(--glow-2) 0%, transparent 55%);
   min-height: 100vh;
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar, rgba(255,255,255,0.12));
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-hover, rgba(255,255,255,0.22));
 }
